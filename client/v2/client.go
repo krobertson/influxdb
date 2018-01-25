@@ -1,5 +1,5 @@
 // Package client (v2) is the current official Go client for InfluxDB.
-package client // import "github.com/influxdata/influxdb/client/v2"
+package client
 
 import (
 	"bytes"
@@ -36,6 +36,10 @@ type HTTPConfig struct {
 
 	// Timeout for influxdb writes, defaults to no timeout.
 	Timeout time.Duration
+
+	// DisableKeepAlives will ensure influxdb calls to not use keep-alive
+	// connections.
+	DisableKeepAlives bool
 
 	// InsecureSkipVerify gets passed to the http client, if true, it will
 	// skip https certificate verification. Defaults to false.
@@ -95,6 +99,7 @@ func NewHTTPClient(conf HTTPConfig) (Client, error) {
 	}
 
 	tr := &http.Transport{
+		DisableKeepAlives: conf.DisableKeepAlives,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: conf.InsecureSkipVerify,
 		},
